@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Instructor Dashboard</title>
+</head>
+<body>
+    <h1>Instructor Dashboard</h1>
+    <nav>
+        <a href="{% url 'create_course' %}">Create New Course</a> |
+        <a href="{% url 'course_list' %}">View Courses</a>
+    </nav>
+    <h2>Your Courses</h2>
+    <ul>
+        {% for course in courses %}
+            <li>
+                <strong>{{ course.name }}</strong> - {{ course.category }}
+                <a href="{% url 'update_course' course.id %}">Edit</a> |
+                <a href="{% url 'delete_course' course.id %}">Delete</a>
+            </li>
+        {% empty %}
+            <li>No courses available.</li>
+        {% endfor %}
+    </ul>
+    <h4><a href="{% url 'index' %}">Home Page</a></h4>
+</body>
+</html>

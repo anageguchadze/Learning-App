@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Student Page</title>
+</head>
+<body>
+    <h1>Welcome, {{ user.username }}!</h1>
+    <h2>Enrolled Courses</h2>
+    <ul>
+        {% for enrollment in enrollments %}
+            <li>
+                {{ enrollment.course.name }} - Progress: {{ enrollment.progress }}%
+                {% if not enrollment.completed %}
+                    <a href="{% url 'update_progress' enrollment.id %}">Update Progress</a>
+                {% else %}
+                    Completed
+                {% endif %}
+            </li>
+        {% empty %}
+            <li>No courses enrolled yet.</li>
+        {% endfor %}
+    </ul>
+    <h2><a href="{% url 'available_courses' %}">Browse Available Courses</a></h2>
+    <h4><a href="{% url 'index' %}">Home Page</a></h4>
+</body>
+</html>

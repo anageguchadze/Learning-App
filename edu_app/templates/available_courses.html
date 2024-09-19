@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Available Courses</title>
+</head>
+<body>
+    <h1>Available Courses</h1>
+    <ul>
+        {% for course in courses %}
+            <li>
+                {{ course.name }} - {{ course.description }}
+                <form method="post" action="{% url 'enroll_course' course.id %}">
+                    {% csrf_token %}
+                    <button type="submit">Enroll</button>
+                </form>
+            </li>
+        {% empty %}
+            <li>No courses available at the moment.</li>
+        {% endfor %}
+    </ul>
+    <h4><a href="{% url 'student_page' %}">Back to My Courses</a></h4>
+    <h4><a href="{% url 'index' %}">Home Page</a></h4>
+</body>
+</html>

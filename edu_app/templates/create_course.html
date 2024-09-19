@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Create Course</title>
+</head>
+<body>
+    <h1>Create Course</h1>
+    <form method="POST">
+        {% csrf_token %}
+        <label for="name">Course Name:</label>
+        <input type="text" id="name" name="name" required><br><br>
+        
+        <label for="description">Description:</label>
+        <textarea id="description" name="description" required></textarea><br><br>
+        
+        <label for="category">Category:</label>
+        <select id="category" name="category" required>
+            <option value="math">Mathematics</option>
+            <option value="science">Science</option>
+            <option value="history">History</option>
+            <option value="tech">Technology</option>
+        </select><br><br>
+        
+        <button type="submit">Create</button>
+    </form>
+    <h4><a href="{% url 'index' %}">Home Page</a></h4>
+</body>
+</html>

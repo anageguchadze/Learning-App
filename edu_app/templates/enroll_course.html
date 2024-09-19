@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Enroll in Course</title>
+</head>
+<body>
+    <h1>Enroll in {{ course.name }}</h1>
+    <form method="POST">
+        {% csrf_token %}
+        <button type="submit">Enroll</button>
+    </form>
+    <h4><a href="{% url 'student_page' %}">Back to Student Page</a></h4>
+</body>
+</html>
