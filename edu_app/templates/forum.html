@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Forum</title>
+</head>
+<body>
+    <h1>Forum</h1>
+
+    {% if form %}
+    <h2>Ask a Question</h2>
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Submit Question</button>
+    </form>
+    {% endif %}
+
+    <h2>Questions</h2>
+    <ul>
+        {% for question in questions %}
+        <li>
+            <a href="{% url 'view_question' question.slug %}">{{ question.question_text }}</a>
+            
+            <!-- Check if the question has any answers -->
+            {% if question.answer_set.all %}
+                <ul>
+                <!-- Loop through all the related answers -->
+                {% for answer in question.answer_set.all %}
+                    <li>
+                        <strong>Answer:</strong> {{ answer.answer_text }} - 
+                        {% if answer.instructor %}
+                            {{ answer.instructor.user.username }}
+                        {% else %}
+                            Anonymous
+                        {% endif %}
+                    </li>
+                {% endfor %}
+                </ul>
+            {% else %}
+                <p><strong>No answer yet.</strong></p>
+            {% endif %}
+        </li>
+        {% endfor %}
+    </ul>
+
+    <a href="{% url 'index' %}">Back to Home</a>
+</body>
+</html>

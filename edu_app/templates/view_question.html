@@ -1,0 +1,28 @@
+<h1>Question: {{ question.question_text }}</h1>
+
+{% if answers %}
+    <h2>Answers:</h2>
+    <ul>
+    {% for answer in answers %}
+        <li>
+            {{ answer.answer_text }} - 
+            {% if answer.instructor %}
+                {{ answer.instructor.user.username }}
+            {% else %}
+                Anonymous
+            {% endif %}
+        </li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <h2>No answers yet.</h2>
+{% endif %}
+
+<h2>Submit an Answer</h2>
+<form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Submit Answer</button>
+</form>
+
+<a href="{% url 'forum' %}">Back to Forum</a>

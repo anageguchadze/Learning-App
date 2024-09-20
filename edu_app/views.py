@@ -2,9 +2,9 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login as auth_login
 from django.contrib.auth.models import User
 from django.contrib import messages
-from .models import Profile, Course, Enrollment
+from .models import Profile, Course, Enrollment, Question, Answer
 from django.contrib.auth.decorators import login_required
-from .forms import CourseForm, EnrollmentForm
+from .forms import CourseForm, EnrollmentForm, QuestionForm, AnswerForm
 
 def index(request):
     return render(request, 'index.html')
@@ -165,3 +165,71 @@ def available_courses(request):
     available_courses = Course.objects.exclude(id__in=enrolled_course_ids)
     
     return render(request, 'available_courses.html', {'courses': available_courses})
+
+def ask_question(request):
+    if request.method == 'POST':
+        form = QuestionForm(request.POST)
+        if form.is_valid():
+            question = form.save(commit=False)
+
+            # If the user is logged in, associate the question with their profile
+            if request.user.is_authenticated:
+                profile = Profile.objects.filter(user=request.user).first()
+                if profile and profile.role == 'student':
+                    question.student = profile
+
+            question.save()
+            return redirect('forum')
+    else:
+        form = QuestionForm()
+
+    return render(request, 'ask_question.html', {'form': form})
+
+
+
+def view_question(request, slug):
+    question = get_object_or_404(Question, slug=slug)
+    answers = Answer.objects.filter(question=question)
+
+    if request.method == 'POST':
+        form = AnswerForm(request.POST)
+        if form.is_valid():
+            answer = form.save(commit=False)
+
+            # If the user is logged in, associate the answer with their profile
+            if request.user.is_authenticated:
+                profile = Profile.objects.filter(user=request.user).first()
+                if profile and profile.role == 'instructor':
+                    answer.instructor = profile
+
+            answer.question = question
+            answer.save()
+            return redirect('view_question', slug=question.slug)
+    else:
+        form = AnswerForm()
+
+    return render(request, 'view_question.html', {'question': question, 'answers': answers, 'form': form})
+
+
+
+def forum(request):
+    profile = get_object_or_404(Profile, user=request.user)
+
+    # Fetch questions and answers together
+    questions = Question.objects.prefetch_related('answer_set').order_by('-created_at')
+
+    # Only students can ask questions
+    if profile.role == 'student':
+        if request.method == 'POST':
+            form = QuestionForm(request.POST)
+            if form.is_valid():
+                question = form.save(commit=False)
+                question.student = profile
+                question.save()
+                return redirect('forum')  # Redirect to the forum after posting
+        else:
+            form = QuestionForm()
+    else:
+        form = None  # No form for instructors
+
+    return render(request, 'forum.html', {'questions': questions, 'form': form})
